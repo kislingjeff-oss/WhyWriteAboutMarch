@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>What Did Not Reach Us &mdash; an interactive companion</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#FBFAF6; --paper:#FFFFFF; --ink:#2A352F; --muted:#55605A;
+    --sage:#4E7261; --blue:#517087; --blush:#B67A70; --gold:#9F7C36; --lav:#7E76A6;
+    --sage-bg:#E5EDE8; --blue-bg:#E4EDF2; --blush-bg:#F5E4DF; --gold-bg:#F4ECD9; --lav-bg:#E9E4F0;
+    --line:#E2E8E3;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{margin:0;background:var(--cream);color:var(--ink);font-family:'Inter',sans-serif;line-height:1.65;-webkit-font-smoothing:antialiased;}
+  h1,h2,h3,.kicker,.tab,.btn,.chip{font-family:'Poppins',sans-serif;}
+  .wrap{max-width:1000px;margin:0 auto;padding:0 26px;}
+  .kicker{letter-spacing:.2em;text-transform:uppercase;font-size:.76rem;font-weight:600;color:var(--blue);}
+
+  /* header + tabs */
+  header{background:linear-gradient(180deg,#F1F5F0 0%,var(--cream) 100%);border-bottom:1px solid var(--line);}
+  header .wrap{padding:30px 26px 0;}
+  .brand{font-family:'Poppins';font-weight:700;font-size:1.9rem;color:var(--ink);margin:6px 0 2px;line-height:1.1;}
+  .brand span{color:var(--sage);}
+  .tagline{color:var(--sage);font-family:'Poppins';font-style:italic;font-size:1.02rem;margin-bottom:20px;}
+  .tabs{display:flex;gap:6px;flex-wrap:wrap;}
+  .tab{border:none;background:transparent;color:var(--muted);font-size:.95rem;font-weight:500;padding:12px 20px;border-radius:12px 12px 0 0;cursor:pointer;transition:.2s;border-bottom:3px solid transparent;}
+  .tab:hover{color:var(--sage);}
+  .tab.active{color:var(--sage);background:var(--cream);border-bottom-color:var(--sage);font-weight:600;}
+
+  main{padding:44px 0 30px;}
+  .view{display:none;animation:fade .5s ease;}
+  .view.active{display:block;}
+  @keyframes fade{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:none;}}
+  h2.section{font-size:1.7rem;font-weight:600;margin:0 0 6px;}
+  .lead{color:var(--muted);max-width:720px;margin:0 0 26px;font-size:1.05rem;}
+
+  /* paradox */
+  .paradox{background:var(--blue-bg);border-radius:20px;padding:30px 34px;border-left:6px solid var(--blue);margin-bottom:34px;}
+  .paradox p{margin:0 0 14px;font-size:1.08rem;}
+  .paradox .pivot{font-family:'Poppins';font-weight:600;color:var(--blue);font-size:1.25rem;margin-top:18px;}
+
+  /* cards */
+  .cards{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+  @media(max-width:700px){.cards{grid-template-columns:1fr;}}
+  .card{border-radius:18px;padding:24px 26px;cursor:pointer;transition:transform .25s,box-shadow .25s;}
+  .card:hover{transform:translateY(-4px);box-shadow:0 14px 30px rgba(42,53,47,.09);}
+  .card .num{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-family:'Poppins';font-weight:700;font-size:1.1rem;margin-bottom:12px;}
+  .card h3{margin:0;font-size:1.22rem;font-weight:600;display:flex;justify-content:space-between;align-items:center;}
+  .card h3 .chev{font-size:.85rem;color:var(--muted);transition:transform .3s;}
+  .card.open h3 .chev{transform:rotate(90deg);}
+  .card .detail{max-height:0;opacity:0;overflow:hidden;transition:max-height .4s,opacity .3s,margin .3s;font-size:1rem;color:#33403a;}
+  .card.open .detail{max-height:320px;opacity:1;margin-top:12px;}
+  .c-sage{background:var(--sage-bg);} .c-sage .num{background:var(--sage);}
+  .c-blush{background:var(--blush-bg);} .c-blush .num{background:var(--blush);}
+  .c-blue{background:var(--blue-bg);} .c-blue .num{background:var(--blue);}
+  .c-gold{background:var(--gold-bg);} .c-gold .num{background:var(--gold);}
+
+  .qbar{margin-top:34px;background:var(--ink);color:#EAF0EC;border-radius:18px;padding:30px 34px;text-align:center;}
+  .qbar .q1{color:#C6B2CE;text-decoration:line-through;opacity:.7;}
+  .qbar .q2{color:#A7C7B6;font-weight:500;}
+  .qbar .line{font-family:'Poppins';font-style:italic;font-size:1.3rem;}
+
+  /* series */
+  .series{display:flex;flex-direction:column;gap:11px;}
+  .post{border:1px solid var(--line);border-radius:14px;background:var(--paper);overflow:hidden;transition:border-color .25s;}
+  .post.open{border-color:var(--sage);}
+  .post .phead{display:flex;align-items:center;gap:16px;padding:16px 20px;cursor:pointer;}
+  .post .pnum{flex:0 0 auto;width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Poppins';font-weight:700;color:#fff;}
+  .post .ptitle{font-family:'Poppins';font-weight:600;font-size:1.08rem;flex:1;}
+  .post .parrow{color:var(--muted);transition:transform .3s;}
+  .post.open .parrow{transform:rotate(90deg);}
+  .post .pbody{max-height:0;opacity:0;overflow:hidden;transition:max-height .45s,opacity .3s;}
+  .post.open .pbody{max-height:360px;opacity:1;}
+  .pbody-inner{padding:0 20px 20px 74px;}
+  .prow{margin:9px 0;}
+  .prow .plabel{font-family:'Poppins';font-style:italic;font-weight:500;color:var(--sage);margin-right:5px;}
+  .controls{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;}
+
+  /* buttons */
+  .btn{font-family:'Poppins';font-weight:500;font-size:.92rem;border:1px solid var(--line);background:var(--paper);color:var(--muted);border-radius:30px;padding:11px 22px;cursor:pointer;transition:.2s;}
+  .btn:hover{border-color:var(--sage);color:var(--sage);}
+  .btn.primary{background:var(--sage);color:#fff;border-color:var(--sage);}
+  .btn.primary:hover{background:#3f5f50;color:#fff;}
+  .btn:disabled{opacity:.4;cursor:not-allowed;}
+
+  /* wizard */
+  .wizard{background:var(--paper);border:1px solid var(--line);border-radius:22px;padding:34px 36px;box-shadow:0 10px 34px rgba(42,53,47,.05);}
+  @media(max-width:600px){.wizard{padding:26px 22px;}}
+  .progress{display:flex;align-items:center;gap:0;margin-bottom:28px;}
+  .pstep{flex:1;display:flex;flex-direction:column;align-items:center;position:relative;}
+  .pstep .dot{width:34px;height:34px;border-radius:50%;background:var(--sage-bg);color:var(--sage);display:flex;align-items:center;justify-content:center;font-family:'Poppins';font-weight:600;z-index:2;transition:.3s;border:2px solid transparent;}
+  .pstep.active .dot{background:var(--sage);color:#fff;transform:scale(1.08);}
+  .pstep.done .dot{background:var(--sage);color:#fff;}
+  .pstep .plabel{font-size:.74rem;color:var(--muted);margin-top:7px;text-align:center;font-family:'Poppins';font-weight:500;max-width:110px;}
+  .pstep::before{content:'';position:absolute;top:17px;left:-50%;width:100%;height:2px;background:var(--line);z-index:1;}
+  .pstep:first-child::before{display:none;}
+  .pstep.done::before,.pstep.active::before{background:var(--sage);}
+
+  .step{display:none;}
+  .step.active{display:block;animation:fade .4s ease;}
+  .step .skicker{font-family:'Poppins';font-weight:600;color:var(--sage);font-size:.85rem;letter-spacing:.05em;text-transform:uppercase;}
+  .step h3{font-size:1.4rem;font-weight:600;margin:6px 0 4px;}
+  .step .help{color:var(--muted);margin:0 0 18px;font-size:1rem;}
+  .step .help a{color:var(--blue);}
+  textarea,input[type=text],input[type=date]{width:100%;font-family:'Inter';font-size:1rem;color:var(--ink);border:1.5px solid var(--line);border-radius:12px;padding:13px 15px;background:var(--cream);transition:.2s;resize:vertical;}
+  textarea:focus,input:focus{outline:none;border-color:var(--sage);background:#fff;}
+  textarea{min-height:96px;}
+  .egs{font-size:.86rem;color:#8a938c;margin-top:8px;font-style:italic;}
+  .chips{display:flex;flex-wrap:wrap;gap:9px;margin-top:4px;}
+  .chip{border:1.5px solid var(--line);background:var(--cream);color:var(--muted);border-radius:24px;padding:9px 16px;font-size:.9rem;font-weight:500;cursor:pointer;transition:.15s;}
+  .chip:hover{border-color:var(--sage);}
+  .chip.selected{background:var(--sage);color:#fff;border-color:var(--sage);}
+  .navrow{display:flex;justify-content:space-between;margin-top:28px;gap:12px;}
+
+  /* result */
+  .result{background:linear-gradient(155deg,#EFF4F0,#F6F1E7);border:1px solid var(--line);border-radius:20px;padding:32px 34px;}
+  .result .rtitle{font-family:'Poppins';font-weight:700;font-size:1.5rem;margin:0 0 4px;}
+  .result .rname{color:var(--sage);font-weight:600;}
+  .rrow{margin:16px 0;padding-left:16px;border-left:3px solid var(--sage);}
+  .rrow .rl{font-family:'Poppins';font-weight:600;color:var(--sage);font-size:.82rem;text-transform:uppercase;letter-spacing:.04em;display:block;margin-bottom:2px;}
+  .rrow .rv{font-size:1.06rem;}
+  .rquestion{margin-top:22px;font-family:'Poppins';font-style:italic;font-size:1.1rem;color:var(--ink);background:#fff;border-radius:14px;padding:16px 20px;}
+  .note{background:var(--blush-bg);border-radius:14px;padding:16px 20px;font-size:.94rem;color:#5a4642;margin-top:22px;}
+  .note b{font-family:'Poppins';}
+  .copied{color:var(--sage);font-size:.85rem;font-weight:600;font-family:'Poppins';margin-left:10px;opacity:0;transition:.3s;}
+  .copied.show{opacity:1;}
+  footer{padding:36px 0 54px;color:#8a938c;font-size:.86rem;text-align:center;border-top:1px solid var(--line);margin-top:20px;}
+  @media print{header,.tabs,footer,.navrow,.controls{display:none!important;} .view{display:block!important;}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <span class="kicker">What Did Not Reach Us</span>
+    <div class="brand">Why Tell the Story of <span>the March</span></div>
+    <div class="tagline">You can&rsquo;t replicate a ninety-four-mile walk &mdash; but a story can open a door.</div>
+    <div class="tabs">
+      <button class="tab active" data-view="idea">The Idea</button>
+      <button class="tab" data-view="build">Build Your First Step</button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- ============ IDEA ============ -->
+  <section class="view active" id="view-idea">
+    <div class="wrap">
+      <span class="kicker">Why Write About the March?</span>
+      <h2 class="section">Knowledge cannot be transferred by reading text</h2>
+      <div class="paradox">
+        <p>Knowledge cannot be transferred from reading text. The March is an example of how knowledge begins to be transferred. It was designed for this very purpose: to provide the extended time required for a channel to begin to open between Native and non-native people &mdash; for the critical relationships to develop.</p>
+        <p>But you cannot walk ninety-four miles with Native and non-native people by reading about it.</p>
+        <div class="pivot">So why write about something no one can replicate?</div>
+      </div>
+      <h2 class="section">What a story can do</h2>
+      <p class="lead">A story cannot transfer the knowledge itself &mdash; but it can do four things that matter. <b>Tap a card</b> to open it.</p>
+      <div class="cards" id="cards"></div>
+      <div class="qbar">
+        <div class="kicker" style="color:#9DBFAD">The question to carry</div>
+        <div class="line" style="margin-top:10px"><span class="q1">&ldquo;May I see it?&rdquo;</span> &nbsp;&mdash;&nbsp; instead &nbsp;&mdash;&nbsp; <span class="q2">&ldquo;What is being asked of me, now that I know?&rdquo;</span></div>
+      </div>
+      <p class="lead" style="margin-top:28px">Ready to answer that question for yourself? &nbsp;<button class="btn primary" onclick="go('build')">Build your first step &rarr;</button></p>
+    </div>
+  </section>
+
+  <!-- ============ BUILD ============ -->
+  <section class="view" id="view-build">
+    <div class="wrap">
+      <span class="kicker">Find Your Own March</span>
+      <h2 class="section">Build your first step</h2>
+      <p class="lead">The content of the March can&rsquo;t be copied, but the pattern can. Answer four short prompts and this will assemble your own doable first step &mdash; a door, and a way to walk through it.</p>
+
+      <div class="wizard">
+        <div class="progress" id="progress"></div>
+
+        <div class="step active" data-step="0">
+          <div class="skicker">Step 1 &middot; The gap</div>
+          <h3>Find your local silence</h3>
+          <p class="help">Every place has a history that did not reach the people who live there &mdash; something specific and nearby you were never taught. Name one.</p>
+          <textarea id="in-silence" placeholder="What did not reach you? Name one specific, nearby history&hellip;"></textarea>
+          <div class="egs">e.g. &ldquo;Whose land my town sits on, and the treaty that took it&rdquo; &middot; &ldquo;A boarding school that once operated near here&rdquo; &middot; &ldquo;A community that was removed from this valley.&rdquo;</div>
+        </div>
+
+        <div class="step" data-step="1">
+          <div class="skicker">Step 2 &middot; The living work</div>
+          <h3>Find the living work near you</h3>
+          <p class="help">Indigenous-led work is usually closer than we know. Name a nearby Native-led organization, gathering, or land project &mdash; or a place to start looking. Learn whose land you&rsquo;re on at <a href="https://native-land.ca" target="_blank" rel="noopener">native-land.ca</a>.</p>
+          <textarea id="in-work" placeholder="What Indigenous-led work or gathering is near you (or where will you look)?"></textarea>
+          <div class="egs">e.g. a local Native-led nonprofit, a powwow or ceremony you&rsquo;ve been invited to, a community farm or land-back project.</div>
+        </div>
+
+        <div class="step" data-step="2">
+          <div class="skicker">Step 3 &middot; What you bring</div>
+          <h3>Show up in your body</h3>
+          <p class="help">You are needed not as someone with something to atone for, but as someone with something to give. What can you offer? Pick any that fit &mdash; and add your own.</p>
+          <div class="chips" id="chips"></div>
+          <textarea id="in-skill" placeholder="Anything else you can offer?" style="margin-top:14px;min-height:64px"></textarea>
+        </div>
+
+        <div class="step" data-step="3">
+          <div class="skicker">Step 4 &middot; The invitation</div>
+          <h3>End with a doable step</h3>
+          <p class="help">Turn it into something you will actually do &mdash; small, concrete, with a date. That is what keeps a good intention from becoming a destination.</p>
+          <input type="text" id="in-step" placeholder="One doable step (e.g. &lsquo;email the Native-led center to ask when I can help&rsquo;)">
+          <div style="margin-top:14px"></div>
+          <input type="date" id="in-date">
+          <input type="text" id="in-name" placeholder="Your name (optional)" style="margin-top:14px">
+        </div>
+
+        <div class="navrow">
+          <button class="btn" id="backBtn" onclick="prevStep()" disabled>&larr; Back</button>
+          <button class="btn primary" id="nextBtn" onclick="nextStep()">Next &rarr;</button>
+        </div>
+      </div>
+
+      <div id="result" style="display:none;margin-top:26px"></div>
+    </div>
+  </section>
+</main>
+
+<footer><div class="wrap">Jeff Kisling &nbsp;&middot;&nbsp; July 2026 &nbsp;&middot;&nbsp; activeobjection.substack.com</div></footer>
+
+<script>
+const cards = [
+  {cls:'c-sage', n:1, title:'Open a door',
+   body:'A story can reveal to you something you were not aware that you did not know. It cannot transfer knowledge about that, though. For that you need an evolving connection with those who have that knowledge &mdash; a deepening relationship, built over time, with the knowledge keepers.'},
+  {cls:'c-blush', n:2, title:'Carry desire, not data',
+   body:'Stories make people want the encounter that changes them. Desire is portable; experience is not.'},
+  {cls:'c-blue', n:3, title:'Transmit the pattern',
+   body:'The content can&rsquo;t be copied, but the method can. Find your local silence, show up in your body, and let the story follow. Because it will.'},
+  {cls:'c-gold', n:4, title:'End in an invitation',
+   body:'Close the telling with a doable step. How can the reader begin their own journey into what they didn&rsquo;t know they didn&rsquo;t know?'},
+];
+const skillOptions=['Cooking','Driving','Building &amp; repair','Gardening','Record-keeping','Sewing','Hospitality','Listening','Photography','Fundraising','Childcare','Teaching'];
+
+// tabs
+function go(v){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.view===v));
+  document.querySelectorAll('.view').forEach(s=>s.classList.toggle('active',s.id==='view-'+v));
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>go(t.dataset.view));
+
+// cards
+document.getElementById('cards').innerHTML=cards.map(c=>`
+  <div class="card ${c.cls}" role="button" tabindex="0">
+    <div class="num">${c.n}</div>
+    <h3>${c.title}<span class="chev">&#9654;</span></h3>
+    <div class="detail">${c.body}</div>
+  </div>`).join('');
+document.querySelectorAll('.card').forEach(el=>{const t=()=>el.classList.toggle('open');
+  el.onclick=t; el.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();t();}};});
+
+// wizard
+const steps=['The gap','The living work','What you bring','The invitation'];
+let cur=0;
+const state={skills:new Set()};
+document.getElementById('progress').innerHTML=steps.map((s,i)=>`
+  <div class="pstep" data-i="${i}"><div class="dot">${i+1}</div><div class="plabel">${s}</div></div>`).join('');
+document.getElementById('chips').innerHTML=skillOptions.map(s=>`<div class="chip" data-s="${s}">${s}</div>`).join('');
+document.querySelectorAll('.chip').forEach(c=>c.onclick=()=>{
+  c.classList.toggle('selected');
+  const v=c.dataset.s;
+  if(state.skills.has(v))state.skills.delete(v); else state.skills.add(v);
+});
+function renderProgress(){
+  document.querySelectorAll('.pstep').forEach((p,i)=>{
+    p.classList.toggle('active',i===cur);
+    p.classList.toggle('done',i<cur);
+  });
+}
+function showStep(){
+  document.querySelectorAll('.step').forEach((s,i)=>s.classList.toggle('active',i===cur));
+  document.getElementById('backBtn').disabled = cur===0;
+  document.getElementById('nextBtn').textContent = cur===steps.length-1 ? 'See my first step ✓' : 'Next →';
+  renderProgress();
+}
+function prevStep(){ if(cur>0){cur--;showStep();} }
+function nextStep(){
+  // light validation on first two steps
+  if(cur===0 && !document.getElementById('in-silence').value.trim()){flash('in-silence');return;}
+  if(cur===1 && !document.getElementById('in-work').value.trim()){flash('in-work');return;}
+  if(cur<steps.length-1){cur++;showStep();}
+  else finish();
+}
+function flash(id){const el=document.getElementById(id);el.style.borderColor='#B67A70';el.focus();setTimeout(()=>el.style.borderColor='',1400);}
+function esc(t){return (t||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function finish(){
+  const silence=esc(document.getElementById('in-silence').value.trim());
+  const work=esc(document.getElementById('in-work').value.trim());
+  const extra=document.getElementById('in-skill').value.trim();
+  let skills=[...state.skills]; if(extra)skills.push(esc(extra));
+  const skillsTxt=skills.length?skills.join(', '):'&mdash;';
+  const step=esc(document.getElementById('in-step').value.trim())||'one small step this season';
+  const dateRaw=document.getElementById('in-date').value;
+  const date=dateRaw?new Date(dateRaw+'T00:00').toLocaleDateString(undefined,{month:'long',day:'numeric',year:'numeric'}):'a date I will choose this week';
+  const name=esc(document.getElementById('in-name').value.trim());
+  document.querySelector('.wizard').style.display='none';
+  const r=document.getElementById('result');
+  r.style.display='block';
+  r.innerHTML=`
+    <div class="result">
+      <div class="rtitle">My first step${name?` <span class="rname">&mdash; ${name}</span>`:''}</div>
+      <div class="rrow"><span class="rl">What did not reach me</span><span class="rv">${silence}</span></div>
+      <div class="rrow"><span class="rl">The living work near me</span><span class="rv">${work}</span></div>
+      <div class="rrow"><span class="rl">What I can offer</span><span class="rv">${skillsTxt}</span></div>
+      <div class="rrow"><span class="rl">My doable step</span><span class="rv">${step} &mdash; by <b>${date}</b></span></div>
+      <div class="rquestion">The question I carry: <b>not</b> &ldquo;may I see it?&rdquo; but &ldquo;what is being asked of me, now that I know?&rdquo;</div>
+      <div class="note"><b>One gentle reminder.</b> The way in is through relationship, not a tour. Reach out, offer what you can, and let someone who has been before bring you the first time. Learning happens while hands are busy.</div>
+      <div style="margin-top:22px;display:flex;gap:12px;flex-wrap:wrap;align-items:center">
+        <button class="btn primary" onclick="copyPlan()">Copy my plan</button>
+        <button class="btn" onclick="window.print()">Print</button>
+        <button class="btn" onclick="restart()">Start over</button>
+        <span class="copied" id="copied">Copied ✓</span>
+      </div>
+    </div>`;
+  window._plan=`MY FIRST STEP${name?' — '+name:''}\n\nWhat did not reach me: ${strip(silence)}\nThe living work near me: ${strip(work)}\nWhat I can offer: ${strip(skillsTxt)}\nMy doable step: ${strip(step)} — by ${date}\n\nThe question I carry: not "may I see it?" but "what is being asked of me, now that I know?"`;
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function strip(h){const d=document.createElement('div');d.innerHTML=h;return d.textContent;}
+function copyPlan(){navigator.clipboard.writeText(window._plan).then(()=>{
+  const c=document.getElementById('copied');c.classList.add('show');setTimeout(()=>c.classList.remove('show'),1800);
+}).catch(()=>{});}
+function restart(){
+  cur=0;state.skills.clear();
+  ['in-silence','in-work','in-skill','in-step','in-name'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('in-date').value='';
+  document.querySelectorAll('.chip').forEach(c=>c.classList.remove('selected'));
+  document.getElementById('result').style.display='none';
+  document.querySelector('.wizard').style.display='block';
+  showStep();
+}
+showStep();
+</script>
+</body>
+</html>
